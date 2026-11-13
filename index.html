@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hello World ✨</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0a0b10;
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent-1: #6366f1;
+      --accent-2: #ec4899;
+      --accent-3: #06b6d4;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--bg-dark);
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      color: var(--text-main);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Ambient animated aurora backdrop */
+    .aurora-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0.45;
+      animation: float 20s infinite alternate ease-in-out;
+    }
+
+    .orb-1 {
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, #6366f1, #3b82f6);
+      top: -100px;
+      left: -100px;
+      animation-duration: 18s;
+    }
+
+    .orb-2 {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, #ec4899, #f43f5e);
+      bottom: -120px;
+      right: -80px;
+      animation-duration: 22s;
+      animation-delay: -5s;
+    }
+
+    .orb-3 {
+      width: 350px;
+      height: 350px;
+      background: radial-gradient(circle, #06b6d4, #10b981);
+      top: 40%;
+      left: 55%;
+      animation-duration: 15s;
+      animation-delay: -10s;
+    }
+
+    @keyframes float {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(60px, 40px) scale(1.1); }
+      100% { transform: translate(-40px, 80px) scale(0.95); }
+    }
+
+    /* Interactive particle canvas */
+    #particles-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Interactive Spotlight follow */
+    .spotlight {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.06), transparent 80%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Main Container & 3D Tilt Card */
+    .container {
+      position: relative;
+      z-index: 10;
+      perspective: 1000px;
+      padding: 20px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--card-border);
+      border-radius: 28px;
+      padding: 56px 48px;
+      max-width: 540px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.5),
+        inset 0 1px 1px rgba(255, 255, 255, 0.15);
+      transition: transform 0.15s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    .card:hover {
+      border-color: rgba(255, 255, 255, 0.18);
+      box-shadow: 
+        0 30px 60px rgba(99, 102, 241, 0.2),
+        0 15px 35px rgba(0, 0, 0, 0.6),
+        inset 0 1px 2px rgba(255, 255, 255, 0.25);
+    }
+
+    /* Badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #10b981;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    /* Heading */
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.8rem, 7vw, 4rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 18px;
+      background: linear-gradient(135deg, #ffffff 15%, #cbd5e1 45%, #a5b4fc 70%, #ec4899 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+    }
+
+    /* Subtitle */
+    p.subtitle {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+      margin-bottom: 36px;
+      font-weight: 400;
+    }
+
+    /* Magic Action Button */
+    .btn-wrap {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn-magic {
+      position: relative;
+      background: linear-gradient(135deg, #6366f1, #d946ef);
+      color: #ffffff;
+      border: none;
+      outline: none;
+      padding: 14px 28px;
+      font-size: 0.98rem;
+      font-weight: 600;
+      font-family: inherit;
+      border-radius: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      user-select: none;
+    }
+
+    .btn-magic:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 14px 30px rgba(217, 70, 239, 0.4);
+    }
+
+    .btn-magic:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .btn-magic svg {
+      width: 18px;
+      height: 18px;
+      transition: transform 0.3s ease;
+    }
+
+    .btn-magic:hover svg {
+      transform: rotate(20deg) scale(1.15);
+    }
+
+    /* Secondary Button */
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 14px 24px;
+      font-size: 0.98rem;
+      font-weight: 600;
+      font-family: inherit;
+      border-radius: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    /* Footer meta / counter */
+    .meta-footer {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      color: #64748b;
+    }
+
+    .magic-counter {
+      color: #a5b4fc;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Light Blobs -->
+  <div class="aurora-bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- Background Particle Stars Canvas -->
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- Mouse Spotlight Glow -->
+  <div class="spotlight" id="spotlight"></div>
+
+  <!-- Main Card -->
+  <main class="container">
+    <div class="card" id="card">
+      <div class="badge">
+        <span class="badge-dot"></span>
+        <span>Ready to Create</span>
+      </div>
+
+      <h1>Hello, World!</h1>
+
+      <p class="subtitle">
+        Your canvas is set and your journey begins here. Crafted with sleek glassmorphism, dynamic lighting, and smooth interactions.
+      </p>
+
+      <div class="btn-wrap">
+        <button class="btn-magic" id="magicBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+          </svg>
+          Release Magic
+        </button>
+
+        <button class="btn-secondary" id="timeBtn">
+          <span id="timeText">--:--:--</span>
+        </button>
+      </div>
+
+      <div class="meta-footer">
+        <span>Project 1 • Workspace</span>
+        <span>Sparks: <span class="magic-counter" id="sparkCount">0</span></span>
+      </div>
+    </div>
+  </main>
+
+  <!-- Interactive JavaScript -->
+  <script>
+    // 1. Mouse Spotlight tracking & Card 3D tilt
+    const card = document.getElementById('card');
+    const spotlight = document.getElementById('spotlight');
+
+    window.addEventListener('mousemove', (e) => {
+      const x = e.clientX;
+      const y = e.clientY;
+      
+      spotlight.style.setProperty('--mouse-x', `${x}px`);
+      spotlight.style.setProperty('--mouse-y', `${y}px`);
+
+      // 3D Tilt calculation
+      const rect = card.getBoundingClientRect();
+      const cardX = rect.left + rect.width / 2;
+      const cardY = rect.top + rect.height / 2;
+      const deltaX = (x - cardX) / (window.innerWidth / 2);
+      const deltaY = (y - cardY) / (window.innerHeight / 2);
+
+      const rotateX = -deltaY * 12;
+      const rotateY = deltaX * 12;
+
+      card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg)`;
+    });
+
+    // Reset card tilt when mouse leaves
+    document.addEventListener('mouseleave', () => {
+      card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+    });
+
+    // 2. Real-time Clock
+    const timeText = document.getElementById('timeText');
+    function updateClock() {
+      const now = new Date();
+      timeText.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // 3. Audio Synthesizer (gentle chime using Web Audio API - no external assets required)
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function playChime(freq = 587.33) {
+      try {
+        if (!audioCtx) audioCtx = new AudioCtx();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(freq * 1.5, audioCtx.currentTime + 0.3);
+
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.6);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.6);
+      } catch (err) {
+        // audio might be prevented prior to user gesture
+      }
+    }
+
+    // 4. Background Star Particle Canvas
+    const canvas = document.getElementById('particles-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 1.8 + 0.4;
+        this.speedX = (Math.random() - 0.5) * 0.3;
+        this.speedY = (Math.random() - 0.5) * 0.3;
+        this.alpha = Math.random() * 0.7 + 0.2;
+        this.pulse = Math.random() * 0.02 + 0.005;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.alpha += Math.sin(Date.now() * this.pulse) * 0.01;
+
+        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+          this.reset();
+        }
+      }
+      draw() {
+        ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0.1, Math.min(0.9, this.alpha))})`;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < 70; i++) {
+      particles.push(new Particle());
+    }
+
+    // Dynamic Confetti / Spark Particles
+    let sparks = [];
+    class Spark {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 7 + 2;
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
+        this.life = 1;
+        this.decay = Math.random() * 0.025 + 0.015;
+        this.size = Math.random() * 4 + 2;
+        const colors = ['#6366f1', '#ec4899', '#06b6d4', '#f59e0b', '#10b981', '#ffffff'];
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += 0.12; // gravity
+        this.vx *= 0.98;
+        this.life -= this.decay;
+      }
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, this.life);
+        ctx.fillStyle = this.color;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw background ambient stars
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+
+      // Draw confetti sparks
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        sparks[i].update();
+        sparks[i].draw();
+        if (sparks[i].life <= 0) {
+          sparks.splice(i, 1);
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // 5. Button Click Magic Event
+    const magicBtn = document.getElementById('magicBtn');
+    const sparkCountDisplay = document.getElementById('sparkCount');
+    let sparkTotal = 0;
+
+    magicBtn.addEventListener('click', (e) => {
+      const rect = magicBtn.getBoundingClientRect();
+      const originX = rect.left + rect.width / 2;
+      const originY = rect.top + rect.height / 2;
+
+      // Spawn burst of sparks
+      for (let i = 0; i < 45; i++) {
+        sparks.push(new Spark(originX, originY));
+      }
+
+      sparkTotal += 45;
+      sparkCountDisplay.textContent = sparkTotal;
+
+      // Musical chord progression
+      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+      const randomNote = notes[Math.floor(Math.random() * notes.length)];
+      playChime(randomNote);
+
+      // Bounce button animation
+      magicBtn.style.transform = 'scale(0.92)';
+      setTimeout(() => {
+        magicBtn.style.transform = '';
+      }, 150);
+    });
+  </script>
+</body>
+</html>
